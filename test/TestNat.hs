@@ -1,7 +1,10 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE CPP #-}
 module TestNat where
        
+#ifdef TEMPLATE_HASKELL
 import Language.Haskell.TH
+#endif
 import Text.Printf
 
 import TypeLevel.Number.Nat as N
@@ -11,6 +14,7 @@ import TypeLevel.Number.Int as I
 ----------------------------------------------------------------
 -- Natural numbers
 
+#ifdef TEMPLATE_HASKELL
 testAdd :: Integer -> Integer -> ExpQ
 testAdd n m = 
   [| let flag = (n+m) == (N.toInt $ addN (undefined :: $(natT n)) (undefined :: $(natT m)) :: Integer)
@@ -49,6 +53,7 @@ testMulZ n m =
   [| let flag = (n*m) == (I.toInt $ mulN (undefined :: $(intT n)) (undefined :: $(intT m)) :: Integer)
      in test "*" n m flag
    |]
+#endif
 
 test :: String -> Integer -> Integer -> Bool -> IO Bool
 test op n m flag = do

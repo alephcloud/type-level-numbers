@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC  -fno-warn-orphans #-}
 
+{-# LANGUAGE CPP                   #-}
 {-# LANGUAGE DeriveDataTypeable    #-}
 {-# LANGUAGE GADTs                 #-}
 {-# LANGUAGE RankNTypes            #-}
@@ -35,12 +36,16 @@ module TypeLevel.Number.Int ( -- * Integer numbers
                         , SomeInt
                         , withInt
                           -- * Template haskell utilities
+#ifdef TEMPLATE_HASKELL
                         , intT
+#endif
                         , module TypeLevel.Number.Classes
                         ) where
 
 import Data.Typeable (Typeable)
+#ifdef TEMPLATE_HASKELL
 import Language.Haskell.TH
+#endif
 
 import TypeLevel.Number.Classes
 import TypeLevel.Number.Int.Types
@@ -56,6 +61,7 @@ splitToTrits x | n == 0 =  0 : splitToTrits  rest
                  (rest,n) = divMod x 3
 splitToTrits _ = error "Internal error"
 
+#ifdef TEMPLATE_HASKELL
 -- | Generate type for integer number.
 intT :: Integer -> TypeQ
 intT = foldr appT (conT ''ZZ) . map con . splitToTrits
@@ -64,6 +70,7 @@ intT = foldr appT (conT ''ZZ) . map con . splitToTrits
     con   0  = conT ''D0
     con   1  = conT ''D1
     con   x  = error $ "Strange trit: " ++ show x
+#endif
 
 ----------------------------------------------------------------
 --

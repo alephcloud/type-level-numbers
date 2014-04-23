@@ -41,11 +41,17 @@ source-repository head
   type:     git
   location: https://github.com/Shimuuar/type-level-numbers
 
+Flag templatehaskell
+  description: build with template haskell
+  Default: False
 
 Library
   ghc-options:     -Wall
-  Build-Depends:   base >=3 && <5,
-                   template-haskell > 2.0
+  Build-Depends:   base >=3 && <5
+  if flag(templatehaskell)
+    CPP-Options: -DTEMPLATE_HASKELL
+    Build-Depends: template-haskell > 2.0
+    Other-modules: TypeLevel.Number.Nat.TH
   Exposed-modules: TypeLevel.Number.Classes
                    TypeLevel.Number.Nat
                    TypeLevel.Number.Nat.Num
@@ -53,7 +59,6 @@ Library
                    TypeLevel.Boolean
                    TypeLevel.Reify
   Other-modules:   TypeLevel.Number.Nat.Types
-                   TypeLevel.Number.Nat.TH
                    TypeLevel.Number.Int.Types
                    TypeLevel.Util
 
@@ -64,8 +69,9 @@ test-suite test-nat
   other-modules:  TestNat
   build-depends:
     base,
-    template-haskell,
     type-level-numbers
+  if flag(templatehaskell)
+    Build-Depends: template-haskell
 
 test-suite test-int
   type:           exitcode-stdio-1.0
@@ -74,5 +80,6 @@ test-suite test-int
   other-modules:  TestNat
   build-depends:
     base,
-    template-haskell,
     type-level-numbers
+  if flag(templatehaskell)
+    Build-Depends: template-haskell

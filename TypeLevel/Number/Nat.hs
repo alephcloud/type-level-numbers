@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC  -fno-warn-orphans #-}
 
+{-# LANGUAGE CPP                   #-}
 {-# LANGUAGE GADTs                 #-}
 {-# LANGUAGE EmptyDataDecls        #-}
 {-# LANGUAGE FlexibleInstances     #-}
@@ -58,8 +59,10 @@ module TypeLevel.Number.Nat ( -- * Natural numbers
                         , withNat
                           -- * Template haskell utilities
                           -- $TH
+#ifdef TEMPLATE_HASKELL
                         , natT
                         , nat
+#endif
                         , module TypeLevel.Number.Classes
                         ) where
 
@@ -69,7 +72,9 @@ import Data.Typeable (Typeable)
 
 import TypeLevel.Number.Classes
 import TypeLevel.Number.Nat.Types
+#ifdef TEMPLATE_HASKELL
 import TypeLevel.Number.Nat.TH
+#endif
 import TypeLevel.Reify
 
 -- $TH
@@ -151,6 +156,7 @@ instance                Reify    Z  Int where witness = Witness 0
 instance (Nat (O n)) => Reify (O n) Int where witness = Witness $ toInt (undefined :: O n)
 instance (Nat (I n)) => Reify (I n) Int where witness = Witness $ toInt (undefined :: I n)
 
+#ifdef TEMPLATE_HASKELL
 -- To Word8
 instance                                              Reify    Z  Word8 where witness = Witness 0
 instance (Nat (O n), (O n) `Lesser` $(natT 0x100)) => Reify (O n) Word8 where witness = Witness $ toInt (undefined :: O n)
@@ -160,6 +166,7 @@ instance (Nat (I n), (I n) `Lesser` $(natT 0x100)) => Reify (I n) Word8 where wi
 instance                                                Reify    Z  Word16 where witness = Witness 0
 instance (Nat (O n), (O n) `Lesser` $(natT 0x10000)) => Reify (O n) Word16 where witness = Witness $ toInt (undefined :: O n)
 instance (Nat (I n), (I n) `Lesser` $(natT 0x10000)) => Reify (I n) Word16 where witness = Witness $ toInt (undefined :: I n)
+#endif
 
 -- To Word32 (No checks. Won't to default centext stack length)
 instance                Reify    Z  Word32 where witness = Witness 0
@@ -171,6 +178,7 @@ instance                Reify    Z  Word64 where witness = Witness 0
 instance (Nat (O n)) => Reify (O n) Word64 where witness = Witness $ toInt (undefined :: O n)
 instance (Nat (I n)) => Reify (I n) Word64 where witness = Witness $ toInt (undefined :: I n)
 
+#ifdef TEMPLATE_HASKELL
 -- To Int8
 instance                                             Reify    Z  Int8 where witness = Witness 0
 instance (Nat (O n), (O n) `Lesser` $(natT 0x80)) => Reify (O n) Int8 where witness = Witness $ toInt (undefined :: O n)
@@ -180,6 +188,7 @@ instance (Nat (I n), (I n) `Lesser` $(natT 0x80)) => Reify (I n) Int8 where witn
 instance                                               Reify    Z  Int16 where witness = Witness 0
 instance (Nat (O n), (O n) `Lesser` $(natT 0x8000)) => Reify (O n) Int16 where witness = Witness $ toInt (undefined :: O n)
 instance (Nat (I n), (I n) `Lesser` $(natT 0x8000)) => Reify (I n) Int16 where witness = Witness $ toInt (undefined :: I n)
+#endif
 
 -- To Int32 (No checks. Won't to default centext stack length)
 instance                Reify    Z  Int32 where witness = Witness 0
